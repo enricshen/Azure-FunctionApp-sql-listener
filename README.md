@@ -1,2 +1,3 @@
 # Azure-FunctionApp-SQLTest
  
+insert
