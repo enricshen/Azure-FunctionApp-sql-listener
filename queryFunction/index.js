@@ -13,9 +13,10 @@ module.exports = async function (context, req) {
             return;
         }
 
-        // Extract search parameters from query string (excluding "table")
+        // Extract search parameters from query string (excluding "table" and "code")
         const filters = { ...req.query };
         delete filters.table; // Remove table name from filters
+        delete filters.code; // Remove Azure Functions authentication code
 
         // Construct WHERE clause dynamically
         let whereClause = "";
