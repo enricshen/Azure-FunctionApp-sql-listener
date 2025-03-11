@@ -13,18 +13,43 @@ module.exports = async function (context, req) {
             return;
         }
 
-        // Extract search parameters from query string (excluding "table" and "code")
+        // Escape table name to prevent SQL Injection
+        const escapedTable = `[${table.replace(/[^a-zA-Z0-9_]/g, "")}]`;
+
+        // Extract search parameters from query string (excluding "code")
         const filters = { ...req.query };
-        delete filters.table; // Remove table name from filters
         delete filters.code; // Remove Azure Functions authentication code
+        delete filters.table; // Remove table name from filters
 
         // Construct WHERE clause dynamically
-        let whereClause = "";
+        let whereClauses = [];
         let parameters = [];
-        Object.keys(filters).forEach((key, index) => {
-            whereClause += `${index === 0 ? "WHERE" : "AND"} ${key} = @param${index} `;
-            parameters.push({ name: `param${index}`, value: filters[key] });
+        let paramIndex = 0;
+
+        Object.keys(filters).forEach((key) => {
+            let value = filters[key];
+
+            // If value is a comma-separated list, use IN clause
+            if (value.includes(",")) {
+                let valuesArray = value.split(",").map((v) => v.trim()); // Split and trim values
+                let inClause = valuesArray.map((_, i) => `@param${paramIndex + i}`).join(", ");
+                whereClauses.push(`${key} IN (${inClause})`);
+
+                // Bind each value as a parameter
+                valuesArray.forEach((v) => {
+                    parameters.push({ name: `param${paramIndex}`, value: v });
+                    paramIndex++;
+                });
+            } else {
+                // Standard equality filter
+                whereClauses.push(`${key} = @param${paramIndex}`);
+                parameters.push({ name: `param${paramIndex}`, value });
+                paramIndex++;
+            }
         });
+
+        // Join WHERE conditions
+        let whereClause = whereClauses.length > 0 ? "WHERE " + whereClauses.join(" AND ") : "";
 
         // Establish SQL connection
         const pool = await sql.connect({
@@ -39,7 +64,7 @@ module.exports = async function (context, req) {
         });
 
         // Construct SQL Query
-        const query = `SELECT * FROM ${table} ${whereClause}`;
+        const query = `SELECT * FROM ${escapedTable} ${whereClause}`;
         const request = pool.request();
 
         // Bind parameters to prevent SQL Injection
