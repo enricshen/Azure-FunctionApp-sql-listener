@@ -29,19 +29,25 @@ module.exports = async function (context, req) {
         Object.keys(filters).forEach((key) => {
             let value = filters[key];
 
-            // If value is a comma-separated list, use IN clause
-            if (value.includes(",")) {
-                let valuesArray = value.split(",").map((v) => v.trim()); // Split and trim values
+            // LIKE filter (e.g. name__like=John)
+            if (key.endsWith("__like")) {
+                const field = key.replace("__like", "");
+                whereClauses.push(`${field} LIKE @param${paramIndex}`);
+                parameters.push({ name: `param${paramIndex}`, value: `%${value}%` }); // wildcard both sides
+                paramIndex++;
+            }
+            // IN clause for comma-separated values
+            else if (value.includes(",")) {
+                let valuesArray = value.split(",").map((v) => v.trim());
                 let inClause = valuesArray.map((_, i) => `@param${paramIndex + i}`).join(", ");
                 whereClauses.push(`${key} IN (${inClause})`);
-
-                // Bind each value as a parameter
                 valuesArray.forEach((v) => {
                     parameters.push({ name: `param${paramIndex}`, value: v });
                     paramIndex++;
                 });
-            } else {
-                // Standard equality filter
+            }
+            // Standard equality filter
+            else {
                 whereClauses.push(`${key} = @param${paramIndex}`);
                 parameters.push({ name: `param${paramIndex}`, value });
                 paramIndex++;
