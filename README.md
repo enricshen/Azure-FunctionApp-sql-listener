@@ -58,3 +58,37 @@ GET http://localhost:7071/api/queryData?table=appUsers&user_id=1,2,3
 
 Wildcard search (LIKE clause):
 GET http://localhost:7071/api/queryData?table=stocks&stock_symbol__like=A
+
+### 🔹 `bulkInsertFucntion`
+
+**Method:** `POST`  
+**Endpoint:** `/api/bulk-insert`  
+**Description:** Bulk upload data to a table.
+
+**Example:**
+http://localhost:7071/api/bulk-insert
+
+**Request Body:**
+{
+    "table": "appTransactions",
+    "data": [
+      { "user_id": 3, "portfolio_id": 3,"stock_symbol":"IBM", "transaction_type": "Buy" },
+      { "user_id": 3, "portfolio_id": 3,"stock_symbol":"AAPL", "transaction_type": "Buy" },
+      { "user_id": 3, "portfolio_id": 3,"stock_symbol":"ATM", "transaction_type": "Buy" }
+    ]
+  }
+
+### 🔹 `deleteFucntion`
+
+**Method:** `POST`  
+**Endpoint:** `/api/-delete`  
+**Description:** Delete a single record from table
+
+**Example:**
+http://localhost:7071/api/delete
+
+**Request Body:**
+{
+    "table": "appTransactions",
+    "id": 91
+  }

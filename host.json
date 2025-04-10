@@ -17,6 +17,7 @@
     "bulkInsertFunction",
     "getUserFunction",
     "queryFunction",
-    "editFunction"
+    "editFunction",
+    "deleteFunction"
   ]
 }
