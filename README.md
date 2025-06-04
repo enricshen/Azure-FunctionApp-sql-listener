@@ -78,6 +78,30 @@ http://localhost:7071/api/bulk-insert
     ]
   }
 
+
+### 'Edit'
+**Endpoint:** `/api/edit`  
+**Description:** Can single edit or bulk edit records
+
+**Request Body:**
+Single:
+  { 
+    "table": "appUserStockInfo", 
+    "id": 1,
+    "user_id": 2,
+    "unit_price_local": 11,
+}
+
+Bulk:
+  { 
+    "table": "appTransactions", 
+    "records":[
+    {"id": 518, "portfolio_id": 4},
+    {"id": 519, "portfolio_id": 4}
+    ]
+}
+
+
 ### 🔹 `deleteFucntion`
 
 **Method:** `POST`  
