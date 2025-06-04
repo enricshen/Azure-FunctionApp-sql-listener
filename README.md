@@ -80,6 +80,7 @@ http://localhost:7071/api/bulk-insert
 
 
 ### 'Edit'
+**Method:** `PUT` 
 **Endpoint:** `/api/edit`  
 **Description:** Can single edit or bulk edit records
 
