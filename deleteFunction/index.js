@@ -22,6 +22,7 @@ module.exports = async function (context, req) {
             user: process.env.SQL_USER,
             password: process.env.SQL_PASSWORD,
             server: process.env.SQL_SERVER,
+            port: parseInt(process.env.SQL_PORT), //remove port if connecting to Azure SQL
             database: process.env.SQL_DATABASE,
             options: {
                 encrypt: process.env.SQL_ENCRYPT === "true",
