@@ -128,3 +128,4 @@ dist
 
 .env
 local.settings.json
+local.settings.production.json
